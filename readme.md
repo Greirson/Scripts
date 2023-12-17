@@ -3,5 +3,5 @@
 # Install Glances
 
 ```
-bash -c "$(wget -qO- https://github.com/Greirson/Scripts/blob/main/install_glances.sh)"
+bash -c "$(wget -qO- https://raw.githubusercontent.com/Greirson/Scripts/main/install_glances.sh)"
 ```
