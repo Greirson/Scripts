@@ -4,6 +4,8 @@
 machine_ip=$(hostname -I | awk '{print $1}')
 
 # Update package list
+sudo apt update
+
 wget -O- https://bit.ly/glances | /bin/bash
 
 # Create a systemd service file for Glances
