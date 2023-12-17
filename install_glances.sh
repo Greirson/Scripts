@@ -29,10 +29,10 @@ sudo systemctl enable glances.service
 sudo systemctl start glances.service
 
 # Display machine's IP address
+echo ""
 echo "Machine IP Address: $machine_ip"
-
-# Find the port on which Glances is running (default is 61208)
-glances_port=$(ps aux | grep '[g]lances -w' | awk '{print $NF}' | sed 's/.*://')
+echo ""
 
 # Display the link to Glances web UI
-echo "Glances Web UI: http://$machine_ip:$glances_port"
+echo "Glances Web UI: http://$machine_ip:61208"
+echo ""
