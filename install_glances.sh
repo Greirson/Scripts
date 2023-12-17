@@ -69,3 +69,4 @@ Add the following lines to your Home Assistant configuration.yaml file under 'se
     scan_interval: 10
     unit_of_measurement: 'GB'
 EOF
+cat /etc/glances/homeassistant.yaml
