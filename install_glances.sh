@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Get the current machine's IP address
+machine_ip=$(hostname -I | awk '{print $1}')
+
+# Confirm the detected IP address
+read -p "Detected IP address: $machine_ip. Is this correct? (y/n): " confirm_ip
+
+if [ "$confirm_ip" != "y" ]; then
+    # If incorrect, prompt for the correct IP address
+    read -p "Enter the correct IP address of this machine: " machine_ip
+fi
+
 # Update package list
 sudo apt update
 
@@ -9,39 +20,13 @@ sudo apt install -y python3-dev python3-pip gcc libatlas-base-dev
 # Install Glances
 sudo pip3 install glances
 
-# Set default username
-default_username="homeassistant"
-
-# Prompt user for Glances web interface username
-read -p "Do you want to use the default username '$default_username'? (y/n): " use_default_username
-
-if [ "$use_default_username" = "y" ]; then
-    glances_username=$default_username
-else
-    read -p "Enter a username for Glances: " glances_username
-fi
-
-# Prompt user for Glances web interface password
-read -s -p "Enter a password for Glances: " glances_password
-echo
-
-# Create Glances configuration directory
-sudo mkdir -p /etc/glances
-
-# Create Glances configuration file with provided credentials
-echo "username=$glances_username" | sudo tee /etc/glances/glances.conf > /dev/null
-echo "password=$(echo -n $glances_password | sha256sum | awk '{print $1}')" | sudo tee -a /etc/glances/glances.conf > /dev/null
-
-# Set proper permissions for the configuration file
-sudo chmod 600 /etc/glances/glances.conf
-
 # Create a systemd service file for Glances
 cat <<EOL | sudo tee /etc/systemd/system/glances.service > /dev/null
 [Unit]
 Description=Glances System Monitor
 
 [Service]
-ExecStart=/usr/local/bin/glances -w --config /etc/glances/glances.conf
+ExecStart=/usr/local/bin/glances -w -t 1 --disable-webui
 Restart=always
 User=root
 
@@ -56,5 +41,25 @@ sudo systemctl daemon-reload
 sudo systemctl enable glances.service
 sudo systemctl start glances.service
 
-# Display password in yellow text
-echo -e "\e[1;33mYour Glances web interface password: $glances_password\e[0m"
+# Write code block to homeassistant.yaml file
+echo -e "Add the following lines to your Home Assistant configuration.yaml file under 'sensors':\n" | sudo tee /etc/glances/homeassistant.yaml > /dev/null
+echo -e "```yaml" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "  - platform: rest" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    name: Glances CPU Load" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    resource: http://$machine_ip:61208/api/2/cpu" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    value_template: '{{ value_json.load }}'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    scan_interval: 10" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    unit_of_measurement: '%'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "  - platform: rest" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    name: Glances Memory Usage" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    resource: http://$machine_ip:61208/api/2/mem" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    value_template: '{{ value_json.percent }}'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    scan_interval: 10" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    unit_of_measurement: '%'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "  - platform: rest" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    name: Glances Disk Free" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    resource: http://$machine_ip:61208/api/2/fs" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    value_template: '{{ value_json[\"/\"].free }}'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    scan_interval: 10" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "    unit_of_measurement: 'GB'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+echo -e "```" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
