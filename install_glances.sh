@@ -48,24 +48,24 @@ sudo mkdir -p /etc/glances
 sudo touch /etc/glances/homeassistant.yaml
 
 # Write code block to homeassistant.yaml file
-echo -e "Add the following lines to your Home Assistant configuration.yaml file under 'sensors':\n" | sudo tee /etc/glances/homeassistant.yaml > /dev/null
-echo -e "```yaml" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "  - platform: rest" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    name: Glances CPU Load" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    resource: http://$machine_ip:61208/api/2/cpu" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    value_template: '{{ value_json.load }}'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    scan_interval: 10" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    unit_of_measurement: '%'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "  - platform: rest" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    name: Glances Memory Usage" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    resource: http://$machine_ip:61208/api/2/mem" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    value_template: '{{ value_json.percent }}'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    scan_interval: 10" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    unit_of_measurement: '%'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "  - platform: rest" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    name: Glances Disk Free" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    resource: http://$machine_ip:61208/api/2/fs" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    value_template: '{{ value_json[\"/\"].free }}'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    scan_interval: 10" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "    unit_of_measurement: 'GB'" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
-echo -e "```" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null
+sudo tee /etc/glances/homeassistant.yaml > /dev/null <<EOF
+Add the following lines to your Home Assistant configuration.yaml file under 'sensors':
+  - platform: rest
+    name: Glances CPU Load
+    resource: http://$machine_ip:61208/api/2/cpu
+    value_template: '{{ value_json.load }}'
+    scan_interval: 10
+    unit_of_measurement: '%'
+  - platform: rest
+    name: Glances Memory Usage
+    resource: http://$machine_ip:61208/api/2/mem
+    value_template: '{{ value_json.percent }}'
+    scan_interval: 10
+    unit_of_measurement: '%'
+  - platform: rest
+    name: Glances Disk Free
+    resource: http://$machine_ip:61208/api/2/fs
+    value_template: '{{ value_json["/"].free }}'
+    scan_interval: 10
+    unit_of_measurement: 'GB'
+EOF
