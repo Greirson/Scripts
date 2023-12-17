@@ -2,4 +2,6 @@
 
 # Install Glances
 
-`bash -c "$(wget -qO- https://github.com/Greirson/Scripts/blob/main/install_glances.sh)"`
+```python
+bash -c "$(wget -qO- https://github.com/Greirson/Scripts/blob/main/install_glances.sh)"
+```
