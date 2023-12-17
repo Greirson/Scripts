@@ -41,6 +41,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable glances.service
 sudo systemctl start glances.service
 
+# Create /etc/glances if it doesn't exist
+sudo mkdir -p /etc/glances
+
+# Create /etc/glances/homeassistant.yaml if it doesn't exist
+sudo touch /etc/glances/homeassistant.yaml
+
 # Write code block to homeassistant.yaml file
 echo -e "Add the following lines to your Home Assistant configuration.yaml file under 'sensors':\n" | sudo tee /etc/glances/homeassistant.yaml > /dev/null
 echo -e "```yaml" | sudo tee -a /etc/glances/homeassistant.yaml > /dev/null

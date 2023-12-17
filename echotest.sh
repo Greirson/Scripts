@@ -1,0 +1,51 @@
+set_password=y
+
+if [ "$set_password" = "y" ]; then
+    {
+        echo "Add the following lines to your Home Assistant configuration.yaml file under 'sensors':"
+        echo "  - platform: rest"
+        echo "    name: Glances CPU Load"
+        echo "    resource: http://$machine_ip:61208/api/2/cpu"
+        echo "    value_template: '{{ value_json.load }}'"
+        echo "    scan_interval: 10"
+        echo "    unit_of_measurement: '%'"
+        echo "  - platform: rest"
+        echo "    name: Glances Memory Usage"
+        echo "    resource: http://$machine_ip:61208/api/2/mem"
+        echo "    value_template: '{{ value_json.percent }}'"
+        echo "    scan_interval: 10"
+        echo "    unit_of_measurement: '%'"
+        echo "  - platform: rest"
+        echo "    name: Glances Disk Free"
+        echo "    resource: http://$machine_ip:61208/api/2/fs"
+        echo "    value_template: '{{ value_json[\"/\"].free }}'"
+        echo "    scan_interval: 10"
+        echo "    unit_of_measurement: 'GB'"
+        echo "```"
+        echo ""
+        echo "Your Glances web interface password: $glances_password"
+    } | sudo tee homeassistant.yaml > /dev/null
+else
+    {
+        echo "Add the following lines to your Home Assistant configuration.yaml file under 'sensors':"
+        echo "  - platform: rest"
+        echo "    name: Glances CPU Load"
+        echo "    resource: http://$machine_ip:61208/api/2/cpu"
+        echo "    value_template: '{{ value_json.load }}'"
+        echo "    scan_interval: 10"
+        echo "    unit_of_measurement: '%'"
+        echo "  - platform: rest"
+        echo "    name: Glances Memory Usage"
+        echo "    resource: http://$machine_ip:61208/api/2/mem"
+        echo "    value_template: '{{ value_json.percent }}'"
+        echo "    scan_interval: 10"
+        echo "    unit_of_measurement: '%'"
+        echo "  - platform: rest"
+        echo "    name: Glances Disk Free"
+        echo "    resource: http://$machine_ip:61208/api/2/fs"
+        echo "    value_template: '{{ value_json[\"/\"].free }}'"
+        echo "    scan_interval: 10"
+        echo "    unit_of_measurement: 'GB'"
+        echo "```"
+    } | sudo tee homeassistant.yaml > /dev/null
+fi
