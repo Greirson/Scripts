@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Run this as root on any debian babsed server to install glances
-# bash -c "$(wget -qO- https://raw.githubusercontent.com/Greirson/Scripts/main/install_glances.sh)"
-
 # Update package list
 sudo apt update
 
@@ -10,7 +7,7 @@ sudo apt update
 sudo apt install -y python3-dev python3-pip gcc libatlas-base-dev
 
 # Install Glances
-pip3 install --user glances
+sudo pip3 install glances
 
 # Set default username
 default_username="homeassistant"
@@ -29,34 +26,35 @@ read -s -p "Enter a password for Glances: " glances_password
 echo
 
 # Create Glances configuration directory
-mkdir -p ~/.config/glances
+sudo mkdir -p /etc/glances
 
 # Create Glances configuration file with provided credentials
-echo "username=$glances_username" > ~/.config/glances/glances.conf
-echo "password=$(echo -n $glances_password | sha256sum | awk '{print $1}')" >> ~/.config/glances/glances.conf
+echo "username=$glances_username" | sudo tee /etc/glances/glances.conf > /dev/null
+echo "password=$(echo -n $glances_password | sha256sum | awk '{print $1}')" | sudo tee -a /etc/glances/glances.conf > /dev/null
 
 # Set proper permissions for the configuration file
-chmod 600 ~/.config/glances/glances.conf
+sudo chmod 600 /etc/glances/glances.conf
 
 # Create a systemd service file for Glances
-cat <<EOL > ~/.config/systemd/user/glances.service
+cat <<EOL | sudo tee /etc/systemd/system/glances.service > /dev/null
 [Unit]
 Description=Glances System Monitor
 
 [Service]
-ExecStart=$HOME/.local/bin/glances -w --config $HOME/.config/glances/glances.conf
+ExecStart=/usr/local/bin/glances -w --config /etc/glances/glances.conf
 Restart=always
+User=root
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 EOL
 
-# Reload user systemd configuration
-systemctl --user daemon-reload
+# Reload systemd configuration
+sudo systemctl daemon-reload
 
 # Enable and start Glances service
-systemctl --user enable glances.service
-systemctl --user start glances.service
+sudo systemctl enable glances.service
+sudo systemctl start glances.service
 
 # Display password in yellow text
 echo -e "\e[1;33mYour Glances web interface password: $glances_password\e[0m"
