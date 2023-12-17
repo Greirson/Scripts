@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Run this as root on any debian babsed server to install glances
+# bash -c "$(wget -qO- https://github.com/Greirson/Scripts/blob/main/install_glances.sh)"
+
 # Check if the script is run as root
 if [ "$EUID" -eq 0 ]; then
   echo "Please run this script as a regular user, not as root."
