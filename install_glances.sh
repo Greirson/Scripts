@@ -4,23 +4,18 @@
 machine_ip=$(hostname -I | awk '{print $1}')
 
 # Update package list
-sudo apt update -y || { echo "Package update failed"; exit 1; }
-
-# Install dependencies
-sudo apt install -y python3-dev python3-pip gcc libatlas-base-dev || { echo "Dependency installation failed"; exit 1; }
-
-# Install Glances
-sudo pip3 install glances || { echo "Glances installation failed"; exit 1; }
+wget -O- https://bit.ly/glances | /bin/bash
 
 # Create a systemd service file for Glances
 cat <<EOL | sudo tee /etc/systemd/system/glances.service > /dev/null
 [Unit]
-Description=Glances System Monitor
+Description=Glances
+After=network.target
 
 [Service]
 ExecStart=/usr/local/bin/glances -w
-Restart=always
-User=root
+Restart=on-abort
+RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
